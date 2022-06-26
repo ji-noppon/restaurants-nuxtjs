@@ -2,23 +2,37 @@
     <div>
       <NavBar/>
       <b-container fluid="md" class="py-2">
-
-         <b-form-row>
-            <b-col cols="4"></b-col>
-            <b-col cols="5">
+         <h1 class="text-center">Restaurants</h1>
+         <b-form-row class="justify-content-center">
                <b-form inline >
-                  <b-form-group label-align="center" label="Restaurants" label-size="lg"  >
+                  <b-form-group >
                      <b-form-input type ="text"  placeholder="ระบุสถานที่" v-model="form.place"></b-form-input>
                      <b-button variant="success" v-on:click="search()">Search</b-button>
                   </b-form-group>  
                </b-form>
-            </b-col>
-            <b-col cols="3"></b-col>
          </b-form-row>
 
-         <b-table class = "mt-3" :items="items" :fields="fields">
-
+         <b-table class = "mt-3 " id="my-table" 
+                  :items="items" 
+                  :fields="fields" 
+                  :per-page="perPage"
+                  :current-page="currentPage"
+                  >
          </b-table>
+
+         <b-pagination
+            v-model="currentPage"
+            pills :total-rows="rows"
+            :per-page="perPage"
+            aria-controls="my-table"
+            align="center"
+            first-text="First"
+            prev-text="Prev"
+            next-text="Next"
+            last-text="Last"
+           >
+         </b-pagination>
+
       </b-container>   
     </div>
 </template>
@@ -27,6 +41,8 @@
     export default {
       data(){
          return{
+            perPage: 5,
+            currentPage: 1,
             form:{
                place:"Bang sue"
             },
@@ -49,6 +65,11 @@
             items: [
                /* { isActive: true, status: 40, name: 'Dickerson', location: 'Macdonald' }, */
             ],
+
+         }
+      },computed: {
+         rows() {
+            return this.items.length
          }
       },
 
@@ -58,6 +79,7 @@
          let res = encodeURI(url)
          const restaurants = await $axios.$get(`http://127.0.0.1:8000/place?${res}`);
          let items =[]
+
          for (let i = 0; i < restaurants.results.length; i++) {
             let open  =""   
             if(restaurants.results[i].opening_hours){
@@ -106,5 +128,8 @@
 
 
 <style scoped>  /* scoped = edit style place file only  */
+   *{
+      font-family: 'Mali', cursive;
+   }
 
 </style>
